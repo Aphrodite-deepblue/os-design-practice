@@ -1,0 +1,17 @@
+# 编译产物
+*.o
+*.a
+*.elf
+*.img
+*.d
+_*/
+
+# 运行时生成文件
+*.log
+fs.img
+
+# 编辑器/系统文件
+.vscode/
+.idea/
+*.swp
+.DS_Store
