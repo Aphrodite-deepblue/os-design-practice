@@ -19,6 +19,7 @@ TAGS
 # 运行时生成文件
 *.log
 fs.img
+test-xv6.out
 
 # 编辑器/系统文件
 .vscode/

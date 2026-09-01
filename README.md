@@ -28,17 +28,30 @@ os-design-practice/
 
 ## 环境搭建与构建运行
 
-需要安装 RISC-V 交叉编译工具链和 QEMU：
+需要安装 RISC-V 交叉编译工具链和 QEMU（**要求 QEMU >= 7.2**，xv6 Makefile 有版本检查）：
 
 ```bash
 # 安装工具链（Ubuntu/Debian）
-sudo apt-get install gcc-riscv64-unknown-elf qemu-system-misc
+sudo apt-get install gcc-riscv64-unknown-elf
+
+# QEMU：Ubuntu 20.04 系统源仅提供 4.2（过旧），需使用 >= 7.2 的版本
+# 方式一：更新系统源中 QEMU（需较新的 Ubuntu 发行版）
+sudo apt-get install qemu-system-misc
+# 方式二：使用 xPack 预编译 QEMU（本机已装到 ~/tools，免 root）
+#   ~/tools/xpack-qemu-riscv-9.2.4-1/bin 已加入 PATH
 
 # 构建并启动 xv6
 make qemu
 ```
 
 启动后进入 xv6 shell，可运行 `ls`、`usertests` 等用户程序测试。
+
+### 本地验证结果（基线版，2026-09-01）
+
+- 编译：`make kernel/kernel fs.img` 成功
+- 启动：QEMU 9.2.4 正常引导，`init: starting sh`
+- 命令测试：`ls`、`echo` 正常
+- 自动化测试：`./test-xv6.py -q usertests` → **ALL TESTS PASSED**
 
 ## 交付成果（按课程任务书）
 
