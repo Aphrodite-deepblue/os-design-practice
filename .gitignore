@@ -1,10 +1,20 @@
-# 编译产物
+# xv6 官方忽略规则
+*~
+_*
 *.o
+*.d
+*.asm
+*.sym
+*.img
+/mkfs/mkfs
+/kernel/kernel
+/user/usys.S
+.gdbinit
+TAGS
+
+# 编译产物补充
 *.a
 *.elf
-*.img
-*.d
-_*/
 
 # 运行时生成文件
 *.log

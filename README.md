@@ -4,6 +4,7 @@
 
 - 时间：26271 小学期，第 1~3 周，2026-08-31 ~ 2026-09-20
 - 平台：[Xv6](https://pdos.csail.mit.edu/6.828/2026/xv6.html) (RISC-V)
+- 基线版本：xv6-riscv 官方仓库最新版（2026-09-01 拉取）
 
 ## 项目说明
 
@@ -14,19 +15,32 @@
 
 ```
 os-design-practice/
-├── ...          # Xv6 内核源码（待添加）
-├── tests/       # 用户态测试程序（待添加）
-├── docs/        # 课程设计报告等文档（待添加）
-└── README.md
+├── kernel/            # Xv6 内核源码（调度、内存、文件系统等）
+├── user/              # Xv6 用户态程序（sh、ls、usertests 等）
+├── mkfs/              # 文件系统镜像生成工具
+├── tests/             # 用户态测试程序（课程新增）
+├── docs/              # 课程设计任务书、设计报告等文档
+├── test-xv6.py        # xv6 自动化测试脚本
+├── Makefile           # 构建脚本
+├── README.md          # 本文件
+└── README             # xv6 官方说明
 ```
 
-## AI 工具使用声明
+## 环境搭建与构建运行
 
-按课程要求，凡使用 AI 工具的小组需在开发相关文档中声明所用 AI 工具/大模型的
-名称、使用场景，并在 git commit 记录、设计实现文档及答辩 PPT 中单独说明
-AI 工具的成果及交互记录。本项目将在此处持续更新。
+需要安装 RISC-V 交叉编译工具链和 QEMU：
 
-## 交付成果
+```bash
+# 安装工具链（Ubuntu/Debian）
+sudo apt-get install gcc-riscv64-unknown-elf qemu-system-misc
+
+# 构建并启动 xv6
+make qemu
+```
+
+启动后进入 xv6 shell，可运行 `ls`、`usertests` 等用户程序测试。
+
+## 交付成果（按课程任务书）
 
 - 可编译运行的 Xv6 改造源码
 - 用户态测试程序
@@ -34,7 +48,21 @@ AI 工具的成果及交互记录。本项目将在此处持续更新。
 - 运行截图与测试日志
 - 答辩 PPT（可选）
 
+## Git 提交约定
+
+课程评分要求"git 提交历史清晰，每一步迭代可见"，因此：
+- 每个功能点独立提交，commit message 写清改动内容
+- 保留 xv6 官方原始代码作为基线提交，后续改动可 diff 对照
+- 小组成员用各自 GitHub 账号提交，体现分工
+
+## AI 工具使用声明
+
+按课程要求，凡使用 AI 工具的小组需在开发相关文档中声明所用 AI 工具/大模型的
+名称、使用场景，并在 git commit 记录、设计实现文档及答辩 PPT 中单独说明
+AI 工具的成果及交互记录。本项目将在此处持续更新。
+
 ## 参考链接
 
 - [Xv6, a simple Unix-like teaching operating system](https://pdos.csail.mit.edu/6.828/2026/xv6.html)
 - [操作系统综合实践课程设计任务书（基于XV6-RISC-V）](https://docs.qq.com/markdown/DUmFydVdaYWx0bkhC?)
+- 课程设计任务书：`docs/课程设计任务书.md`
