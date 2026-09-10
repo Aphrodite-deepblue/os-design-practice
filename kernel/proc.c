@@ -265,6 +265,7 @@ int
 kfork(void)
 {
   int i, pid;
+  int parent_priority;
   struct proc *np;
   struct proc *p = myproc();
 
@@ -272,6 +273,11 @@ kfork(void)
   if ((np = allocproc()) == 0) {
     return -1;
   }
+
+  // Take a lock-protected snapshot before copying the parent's priority.
+  acquire(&p->lock);
+  parent_priority = p->priority;
+  release(&p->lock);
 
   // Copy user memory from parent to child.
   if (uvmcopy(p->pagetable, np->pagetable, p->sz) < 0) {
@@ -286,6 +292,12 @@ kfork(void)
 
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
+
+  // Inherit the parent's priority.  An invalid value is normalized to the
+  // default so that every newly runnable process has a valid priority.
+  np->priority =
+      priority_valid(parent_priority) ? parent_priority : PRIORITY_DEFAULT;
+  np->wait_ticks = 0;
 
   // increment reference counts on open file descriptors.
   for (i = 0; i < NOFILE; i++)
