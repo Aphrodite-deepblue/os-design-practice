@@ -296,7 +296,7 @@ kfork(void)
   // Inherit the parent's priority.  An invalid value is normalized to the
   // default so that every newly runnable process has a valid priority.
   np->priority =
-      priority_valid(parent_priority) ? parent_priority : PRIORITY_DEFAULT;
+    priority_valid(parent_priority) ? parent_priority : PRIORITY_DEFAULT;
   np->wait_ticks = 0;
 
   // increment reference counts on open file descriptors.

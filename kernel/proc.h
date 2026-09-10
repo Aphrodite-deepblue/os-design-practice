@@ -79,8 +79,8 @@ struct trapframe {
 enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
 // Process priority values: smaller numbers have higher priority.
-#define PRIORITY_MIN 0
-#define PRIORITY_MAX 31
+#define PRIORITY_MIN     0
+#define PRIORITY_MAX     31
 #define PRIORITY_DEFAULT 10
 
 static inline int
