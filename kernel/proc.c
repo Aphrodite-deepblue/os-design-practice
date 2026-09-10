@@ -54,6 +54,8 @@ procinit(void)
   for (p = proc; p < &proc[NPROC]; p++) {
     initlock(&p->lock, "proc");
     p->state = UNUSED;
+    p->priority = PRIORITY_DEFAULT;
+    p->wait_ticks = 0;
     p->kstack = KSTACK((int)(p - proc));
   }
 }
@@ -124,6 +126,8 @@ allocproc(void)
 found:
   p->pid = allocpid();
   p->state = USED;
+  p->priority = PRIORITY_DEFAULT;
+  p->wait_ticks = 0;
 
   // Allocate a trapframe page.
   if ((p->trapframe = (struct trapframe *)kalloc()) == 0) {
@@ -167,6 +171,8 @@ freeproc(struct proc *p)
   p->chan = 0;
   p->killed = 0;
   p->xstate = 0;
+  p->priority = PRIORITY_DEFAULT;
+  p->wait_ticks = 0;
   p->state = UNUSED;
 }
 
