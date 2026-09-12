@@ -448,6 +448,7 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
+  int next_index = cpuid() % NPROC;
 
   c->proc = 0;
   for (;;) {
@@ -459,27 +460,56 @@ scheduler(void)
     intr_on();
     intr_off();
 
+    // First find the highest-priority runnable process.  A smaller
+    // priority value means a higher priority.
+    int best_priority = PRIORITY_MAX + 1;
     int found = 0;
     for (p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
-      if (p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-        p->state = RUNNING;
-        c->proc = p;
-        swtch(&c->context, &p->context);
-
-        // Don't re-enable interrupts on release.
-        mycpu()->intena = 0;
-
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
+      if (p->state == RUNNABLE && p->priority < best_priority) {
+        best_priority = p->priority;
         found = 1;
       }
       release(&p->lock);
     }
+
+    if (found) {
+      // Select one process with the best priority.  Start at next_index
+      // so equal-priority processes are scheduled in round-robin order.
+      int selected = 0;
+      for (int offset = 0; offset < NPROC; offset++) {
+        int index = (next_index + offset) % NPROC;
+        p = &proc[index];
+
+        acquire(&p->lock);
+        if (p->state == RUNNABLE && p->priority == best_priority) {
+          // Switch to chosen process.  It is the process's job
+          // to release its lock and then reacquire it
+          // before jumping back to us.
+          p->state = RUNNING;
+          c->proc = p;
+          swtch(&c->context, &p->context);
+
+          // Don't re-enable interrupts on release.
+          mycpu()->intena = 0;
+
+          // Process is done running for now.
+          // It should have changed its p->state before coming back.
+          c->proc = 0;
+          next_index = (index + 1) % NPROC;
+          selected = 1;
+          release(&p->lock);
+          break;
+        }
+        release(&p->lock);
+      }
+
+      // Another CPU may have changed the selected process between the two
+      // scans.  Retry the scheduling decision instead of going idle.
+      if (selected)
+        continue;
+    }
+
     if (found == 0) {
       // nothing to run; stop running on this core until an interrupt.
       asm volatile("wfi");
