@@ -18,3 +18,12 @@
 - **验证**：clean build 成功；QEMU 正常启动；`forktest` 通过；`usertests` 输出 `ALL TESTS PASSED`。
 - **关联提交**：`9e066e5 feat(proc): inherit priority on fork`
 - **状态**：已解决。
+## BUG-20260901-aging-01：Aging 与 setpriority 未来可能的交互待确认
+
+- **类型**：待办/接口约定
+- **现象**：成员 4 的 `setpriority` 尚未合入，Aging 当前按"获得 CPU 即清零 `wait_ticks`"处理；若成员 4 后续选择"手动设置优先级时重置等待状态"，需要与其约定保持一致，避免重复重置或语义冲突。
+- **原因**：跨模块接口约定的时机问题，不是当前分支的 bug。
+- **处理**：本分支保持现状，待任务 D 实现后按 plan.md C.5 顺序联调时再统一确认。
+- **验证**：clean build 成功；QEMU 启动正常；`ls`、`forktest` 正常；`./test-xv6.py -q usertests` 输出 `ALL TESTS PASSED`。
+- **关联提交**：`631ee68 feat(sched): implement aging for waiting processes`
+- **状态**：待联调确认。
