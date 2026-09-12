@@ -83,6 +83,11 @@ enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 #define PRIORITY_MAX     31
 #define PRIORITY_DEFAULT 10
 
+// Aging: a RUNNABLE process that has waited this many consecutive
+// scheduling rounds gets its priority boosted by one level
+// (i.e. priority - 1), to prevent starvation of low-priority processes.
+#define AGING_INTERVAL 50
+
 static inline int
 priority_valid(int priority)
 {
