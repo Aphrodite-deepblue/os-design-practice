@@ -481,12 +481,14 @@ scheduler(void)
     for (p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
       apply_aging(p);
-      if (p->state == RUNNABLE && p->priority < best_priority) {
-        best_priority = p->priority;
-        found = 1;
-      } else if (p->state == RUNNABLE) {
-        // Still waiting for a scheduling opportunity.
+      if (p->state == RUNNABLE) {
+        // Still waiting for a scheduling opportunity; the process
+        // selected below gets its counter cleared on dispatch.
         p->wait_ticks++;
+        if (p->priority < best_priority) {
+          best_priority = p->priority;
+          found = 1;
+        }
       }
       release(&p->lock);
     }
