@@ -643,6 +643,52 @@ wakeup(void *chan)
   }
 }
 
+// Set the priority of the process with the given pid.
+// Return 0 on success, or -1 for an invalid priority or missing process.
+int
+ksetpriority(int pid, int priority)
+{
+  struct proc *p;
+
+  if (pid <= 0 || !priority_valid(priority))
+    return -1;
+
+  for (p = proc; p < &proc[NPROC]; p++) {
+    acquire(&p->lock);
+    if (p->state != UNUSED && p->pid == pid) {
+      p->priority = priority;
+      p->wait_ticks = 0;
+      release(&p->lock);
+      return 0;
+    }
+    release(&p->lock);
+  }
+  return -1;
+}
+
+// Return the priority of the process with the given pid, or -1 if it is not
+// present in the process table.
+int
+kgetpriority(int pid)
+{
+  struct proc *p;
+  int priority;
+
+  if (pid <= 0)
+    return -1;
+
+  for (p = proc; p < &proc[NPROC]; p++) {
+    acquire(&p->lock);
+    if (p->state != UNUSED && p->pid == pid) {
+      priority = p->priority;
+      release(&p->lock);
+      return priority;
+    }
+    release(&p->lock);
+  }
+  return -1;
+}
+
 // Kill the process with the given pid.
 // The victim won't exit until it tries to return
 // to user space (see usertrap() in trap.c).
