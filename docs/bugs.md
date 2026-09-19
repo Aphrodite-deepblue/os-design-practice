@@ -28,12 +28,12 @@
 - **验证**：使用 xPack QEMU 9.2.4 执行版本检查和启动 xv6，不再出现版本解析错误；标准 QEMU 6.2.0 仍会被最低版本要求拒绝。
 - **状态**：已解决。
 
-## BUG-20260901-aging-01：Aging 与 setpriority 未来可能的交互待确认
+## BUG-20260901-aging-01：Aging 与 setpriority 的等待状态需要统一
 
-- **类型**：待办/接口约定
-- **现象**：成员 4 的 `setpriority` 尚未合入，Aging 当前按"获得 CPU 即清零 `wait_ticks`"处理；若成员 4 后续选择"手动设置优先级时重置等待状态"，需要与其约定保持一致，避免重复重置或语义冲突。
-- **原因**：跨模块接口约定的时机问题，不是当前分支的 bug。
-- **处理**：本分支保持现状，待任务 D 实现后按 plan.md C.5 顺序联调时再统一确认。
-- **验证**：clean build 成功；QEMU 启动正常；`ls`、`forktest` 正常；`./test-xv6.py -q usertests` 输出 `ALL TESTS PASSED`。
-- **关联提交**：`631ee68 feat(sched): implement aging for waiting processes`
-- **状态**：待联调确认。
+- **类型**：跨模块接口约定
+- **现象**：Aging 分支按“获得 CPU 即清零 `wait_ticks`”处理；系统调用分支还需要明确手动设置优先级时如何处理已有等待状态。
+- **原因**：Aging 与 `setpriority` 分支并行开发，合并前没有统一等待计数的重置语义。
+- **处理**：调度器在进程获得 CPU 时清零 `wait_ticks`；`setpriority` 成功修改优先级时也清零，使新的手动优先级从新的等待周期开始计算。
+- **验证**：clean build 成功；3 CPU QEMU 的 `usertests -q` 输出 `ALL TESTS PASSED`；单 CPU QEMU 临时集成测试覆盖优先级边界、非法参数、fork 继承、静态优先级顺序和 Aging 提升并输出 `abcdtest: PASS`；`nice` 查询、设置及非法参数检查符合预期。
+- **关联提交**：`631ee68 feat(sched): implement aging for waiting processes`、`43b682f feat(syscall): add priority control syscalls`
+- **状态**：已解决。
