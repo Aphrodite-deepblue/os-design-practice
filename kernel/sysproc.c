@@ -98,6 +98,26 @@ sys_kill(void)
   return kkill(pid);
 }
 
+uint64
+sys_setpriority(void)
+{
+  int pid;
+  int priority;
+
+  argint(0, &pid);
+  argint(1, &priority);
+  return ksetpriority(pid, priority);
+}
+
+uint64
+sys_getpriority(void)
+{
+  int pid;
+
+  argint(0, &pid);
+  return kgetpriority(pid);
+}
+
 // return how many clock tick interrupts have occurred
 // since start.
 uint64

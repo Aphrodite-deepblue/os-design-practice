@@ -18,3 +18,12 @@
 - **验证**：clean build 成功；QEMU 正常启动；`forktest` 通过；`usertests` 输出 `ALL TESTS PASSED`。
 - **关联提交**：`9e066e5 feat(proc): inherit priority on fork`
 - **状态**：已解决。
+
+## BUG-20260917-01：xPack QEMU 版本号无法被 Makefile 识别
+
+- **类型**：构建环境兼容性问题
+- **现象**：使用项目文档推荐的 xPack QEMU 9.2.4 执行 `make qemu` 时，版本检查出现 `bc` 语法错误和 `Illegal number`，但 QEMU 随后仍会启动。
+- **原因**：xPack 的版本输出以 `xPack QEMU emulator version` 开头，原有正则仅识别 `QEMU emulator version`，导致传给 `bc` 的内容不是版本号。
+- **处理**：让版本解析同时接受标准 QEMU 和 xPack QEMU 的输出格式，仍只提取主、次版本参与最低版本检查。
+- **验证**：使用 xPack QEMU 9.2.4 执行版本检查和启动 xv6，不再出现版本解析错误；标准 QEMU 6.2.0 仍会被最低版本要求拒绝。
+- **状态**：已解决。

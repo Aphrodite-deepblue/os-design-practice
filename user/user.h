@@ -25,6 +25,8 @@ char *sys_sbrk(int, int);
 int pause(int);
 int uptime(void);
 int sync(void);
+int setpriority(int, int);
+int getpriority(int);
 
 // ulib.c
 int stat(const char *, struct stat *);
