@@ -150,6 +150,7 @@ UPROGS=\
 	$U/_forphan\
 	$U/_dorphan\
 	$U/_sync\
+	$U/_nice\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
@@ -192,7 +193,7 @@ qemu-gdb: $K/kernel .gdbinit fs.img
 print-gdbport:
 	@echo $(GDBPORT)
 
-QEMU_VERSION := $(shell $(QEMU) --version | head -n 1 | sed -E 's/^QEMU emulator version ([0-9]+\.[0-9]+)\..*/\1/')
+QEMU_VERSION := $(shell $(QEMU) --version | head -n 1 | sed -E 's/^(xPack )?QEMU emulator version ([0-9]+\.[0-9]+)\..*/\2/')
 check-qemu-version:
 	@if [ "$(shell echo "$(QEMU_VERSION) >= $(MIN_QEMU_VERSION)" | bc)" -eq 0 ]; then \
 		echo "ERROR: Need qemu version >= $(MIN_QEMU_VERSION)"; \
