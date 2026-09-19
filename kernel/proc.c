@@ -436,6 +436,19 @@ kwait(uint64 addr)
   }
 }
 
+// Aging helper: call with p->lock held.
+// If a RUNNABLE process has waited long enough, boost its priority
+// by one level (towards PRIORITY_MIN) and reset its wait counter.
+static void
+apply_aging(struct proc *p)
+{
+  if (p->state == RUNNABLE && p->wait_ticks >= AGING_INTERVAL &&
+      priority_valid(p->priority) && p->priority > PRIORITY_MIN) {
+    p->priority -= 1;
+    p->wait_ticks = 0;
+  }
+}
+
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
 // Scheduler never returns.  It loops, doing:
@@ -460,15 +473,22 @@ scheduler(void)
     intr_on();
     intr_off();
 
-    // First find the highest-priority runnable process.  A smaller
-    // priority value means a higher priority.
+    // First apply aging to all waiting processes, then find the
+    // highest-priority runnable process.  A smaller priority value
+    // means a higher priority.
     int best_priority = PRIORITY_MAX + 1;
     int found = 0;
     for (p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
-      if (p->state == RUNNABLE && p->priority < best_priority) {
-        best_priority = p->priority;
-        found = 1;
+      apply_aging(p);
+      if (p->state == RUNNABLE) {
+        // Still waiting for a scheduling opportunity; the process
+        // selected below gets its counter cleared on dispatch.
+        p->wait_ticks++;
+        if (p->priority < best_priority) {
+          best_priority = p->priority;
+          found = 1;
+        }
       }
       release(&p->lock);
     }
@@ -488,6 +508,8 @@ scheduler(void)
           // before jumping back to us.
           p->state = RUNNING;
           c->proc = p;
+          // The process finally gets the CPU: its waiting is over.
+          p->wait_ticks = 0;
           swtch(&c->context, &p->context);
 
           // Don't re-enable interrupts on release.
