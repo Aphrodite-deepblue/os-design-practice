@@ -1,0 +1,160 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{assets/tju-course-report}[2026/07/22 academic blue presentation theme]
+
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{tabularx}
+\RequirePackage{array}
+\RequirePackage{booktabs}
+\RequirePackage{colortbl}
+\RequirePackage{etoolbox}
+\RequirePackage{ragged2e}
+
+\mode<presentation>
+
+% -----------------------------------------------------------------------------
+% Palette
+% -----------------------------------------------------------------------------
+\definecolor{dutBlue}{HTML}{0D4EA6}
+\definecolor{dutNavy}{HTML}{073B7A}
+\definecolor{dutBlueDark}{HTML}{062E63}
+\definecolor{dutSky}{HTML}{E7F0FA}
+\definecolor{dutBlueSoft}{HTML}{F1F6FC}
+\definecolor{dutBg}{HTML}{FFFFFF}
+\definecolor{dutText}{HTML}{202A38}
+\definecolor{dutMuted}{HTML}{687386}
+\definecolor{dutLine}{HTML}{D8DEE8}
+\definecolor{dutWhite}{HTML}{FFFFFF}
+
+\newcommand{\dutTitleText}{\fontsize{15.5}{18}\selectfont}
+\newcommand{\dutSubtitleText}{\fontsize{10.5}{12.5}\selectfont}
+\newcommand{\dutBodyText}{\fontsize{8.5}{11.4}\selectfont}
+
+\setbeamercolor{normal text}{fg=dutText,bg=dutWhite}
+\setbeamercolor{structure}{fg=dutBlueDark}
+\setbeamercolor{itemize item}{fg=dutBlueDark}
+\setbeamercolor{itemize subitem}{fg=dutBlueDark}
+\setbeamercolor{block title}{fg=dutBlueDark,bg=dutWhite}
+\setbeamercolor{block body}{fg=dutText,bg=dutWhite}
+
+\setbeamerfont{normal text}{size*={8.5pt}{11.4pt}}
+\setbeamerfont{frametitle}{series=\bfseries,size=\large}
+\setbeamerfont{block title}{series=\bfseries,size=\small}
+\setbeamerfont{footline}{size=\scriptsize}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamertemplate{itemize item}{\raisebox{0.15ex}{\color{dutBlueDark}\textbullet}}
+\setbeamertemplate{itemize subitem}{\raisebox{0.15ex}{\color{dutBlueDark}\textbullet}}
+\setbeamersize{text margin left=0.65cm,text margin right=0.65cm}
+\arrayrulecolor{dutBlueDark!28}
+
+% -----------------------------------------------------------------------------
+% Quiet academic header used by content pages
+% -----------------------------------------------------------------------------
+\newcommand{\dutlogo}{%
+  \includegraphics[height=0.40cm]{assets/tju-logo.png}%
+  \hspace{0.09cm}{\dutBodyText\color{dutBlueDark}\bfseries 天津大学}
+}
+
+\newcommand{\dutcontentbg}[1]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[dutWhite] (current page.south west) rectangle (current page.north east);
+    \node[anchor=west] at ([xshift=0.72cm,yshift=-0.46cm]current page.north west) {\dutlogo};
+    \node[anchor=east,text=dutText,font=\dutBodyText] at ([xshift=-0.72cm,yshift=-0.46cm]current page.north east) {\ifstrempty{#1}{}{\textcolor{dutBlueDark}{\bfseries #1}\quad\textcolor{dutText}{|}\quad}\insertframenumber\,/\,\inserttotalframenumber};
+    \draw[dutBlueDark!24,line width=0.55pt] ([xshift=0.72cm,yshift=-0.84cm]current page.north west) -- ([xshift=-0.72cm,yshift=-0.84cm]current page.north east);
+  \end{tikzpicture}%
+}
+
+\newcommand{\dutheading}[1]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=west,text=dutBlueDark,font=\dutTitleText\bfseries] at ([xshift=0.74cm,yshift=-1.25cm]current page.north west) {#1};
+  \end{tikzpicture}%
+}
+
+\newenvironment{dutframe}[2]{%
+  \begin{frame}[plain,t]
+    \dutcontentbg{#1}
+    \vspace*{1.73cm}
+    \dutheading{#2}
+    \dutBodyText\color{dutText}
+}{%
+  \end{frame}
+}
+
+% -----------------------------------------------------------------------------
+% Title and section pages
+% -----------------------------------------------------------------------------
+\newcommand{\duttitlepage}[4]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[dutWhite] (current page.south west) rectangle (current page.north east);
+      \fill[dutBlue] (current page.north west) rectangle ([yshift=-0.12cm]current page.north east);
+      \fill[dutBlue] (current page.south west) rectangle ([yshift=0.12cm]current page.south east);
+      \node[anchor=center,text=dutBlueDark,font=\fontsize{24}{29}\selectfont\bfseries,text width=13.2cm,align=center] at ([yshift=0.95cm]current page.center) {#1};
+      \node[anchor=center,text=dutBlue,font=\fontsize{12}{15}\selectfont] at ([yshift=-0.65cm]current page.center) {#2};
+      \node[anchor=center,text=dutMuted,font=\fontsize{9.5}{13}\selectfont] at ([yshift=-1.25cm]current page.center) {天津大学软件学院\quad · \quad #3};
+    \end{tikzpicture}
+    \null
+  \end{frame}%
+}
+
+\newcommand{\dutclosingpage}[2]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[dutWhite] (current page.south west) rectangle (current page.north east);
+      \fill[dutBlue] (current page.north west) rectangle ([yshift=-0.12cm]current page.north east);
+      \fill[dutBlue] (current page.south west) rectangle ([yshift=0.12cm]current page.south east);
+      \node[anchor=center,text=dutBlueDark,font=\fontsize{27}{32}\selectfont\bfseries,text width=12.4cm,align=center] at ([yshift=0.35cm]current page.center) {#1};
+      \node[anchor=center,text=dutBlue,font=\fontsize{12}{15}\selectfont,text width=12.4cm,align=center] at ([yshift=-0.48cm]current page.center) {#2};
+    \end{tikzpicture}
+    \null
+  \end{frame}%
+}
+
+\newcommand{\dutsectionpage}[2]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[dutWhite] (current page.south west) rectangle (current page.north east);
+      \fill[dutBlueSoft] ([xshift=-4.15cm]current page.north east) rectangle (current page.south east);
+      \node[anchor=west,text=dutBlueDark,font=\fontsize{28}{34}\selectfont\bfseries] at ([xshift=1.2cm,yshift=-2.15cm]current page.north west) {#1\quad #2};
+      \node[anchor=west,text=dutBlueDark,font=\fontsize{8.5}{11}\selectfont] at ([xshift=1.2cm,yshift=-2.65cm]current page.north west) {天津大学 · Research Presentation};
+      \node[anchor=west,text=dutText,font=\fontsize{15}{20}\selectfont\bfseries] at ([xshift=1.2cm,yshift=-3.55cm]current page.north west) {清晰表达 · 结构化展示 · 持续成长};
+      \node[anchor=east,text=dutBlue!18,font=\fontsize{38}{38}\selectfont\bfseries] at ([xshift=-1.0cm,yshift=1.0cm]current page.south east) {#1};
+    \end{tikzpicture}
+    \null
+  \end{frame}%
+}
+
+% -----------------------------------------------------------------------------
+% Reusable academic content blocks
+% -----------------------------------------------------------------------------
+\newenvironment{dutsection}[1]{%
+  \par\noindent
+  {\color{dutBlueDark}\rule{0.08cm}{0.30cm}}\hspace{0.11cm}{\dutSubtitleText\bfseries\color{dutBlueDark}#1}\par
+  \vspace{0.11cm}
+  \dutBodyText\color{dutText}%
+}{%
+  \par
+}
+
+\newcommand{\dutvdivider}[1]{%
+  \centering{\color{dutBlueDark!20}\rule{0.55pt}{#1}}%
+}
+
+\newcommand{\dutimageframe}[1]{%
+  #1%
+}
+
+\newcommand{\dutcaption}[1]{%
+  \par\vspace{0.045cm}{\dutBodyText\color{dutText}#1}%
+}
+
+\newcommand{\duttablehead}[1]{%
+  {\dutSubtitleText\bfseries\color{dutBlueDark}#1}%
+}
+
+\mode<all>

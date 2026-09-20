@@ -278,4 +278,52 @@ Makefile 将 \texttt{\_nice} 加入 \texttt{UPROGS}，因此构建文件系统�
 
 \section{测试与验证}
 
-% 第五阶段的具体测试内容按当前要求留空，待专项测试完成后补充。
+第五阶段的测试程序已随主分支合并，测试入口为
+\texttt{tests/run\_scheduler\_tests.py}，并在临时副本中分别构建单 CPU 与
+3 CPU 的 xv6 镜像，再由 QEMU 启动后执行用户态测试。测试结果由 QEMU 原始日志、
+\texttt{results.json} 和 \texttt{metrics.csv} 同步保存，避免只根据终端上的一行
+“PASS”判断功能状态。
+
+\subsection{专项测试覆盖范围}
+
+\begin{table}[htbp]
+  \centering
+  \caption{调度专项测试与实际覆盖内容}
+  \label{tab:scheduler-tests}
+  \begin{tabularx}{\textwidth}{C{2.3cm}X C{2.4cm}}
+    \toprule
+    测试程序 & 覆盖内容 & 实际状态 \\
+    \midrule
+    \texttt{prioritytest} & 默认优先级、$0$ 和 $31$ 边界、非法参数、PID 查询与设置、\texttt{nice}、fork 继承、进程槽位复用、同级与混合优先级调度。 & 单 CPU、3 CPU 均通过 \\
+    \texttt{agingtest} & 让 8 个高优先级 CPU-bound 进程持续竞争，观察低优先级进程是否在等待后逐级提升并获得运行机会。 & 单 CPU、3 CPU 均通过 \\
+    \texttt{usertests -q} & 检查进程退出、文件系统和原有 xv6 行为是否在调度修改后保持稳定。 & 单 CPU、3 CPU 均通过 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{QEMU 回归结果}
+
+本次验证使用 QEMU 11.1.1，在当前 \texttt{main} 快照的干净临时副本中构建，
+以避开本地工作区中与本项目无关的 \texttt{README} 删除改动。单 CPU 和 3 CPU 两组
+回归均完成了内核构建、文件系统镜像生成、QEMU 启动、用户态程序退出后的 shell
+存活检查以及 \texttt{usertests -q}。核心结果如下：
+
+\begin{table}[htbp]
+  \centering
+  \caption{单 CPU 与多 CPU 回归结果}
+  \label{tab:scheduler-regression}
+  \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{1.5cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+    \toprule
+    配置 & 优先级专项 & Aging 专项 & 其他回归 \\
+    \midrule
+    1 CPU & \texttt{prioritytest: PASS}，输出 6 条指标 & \tabincell{c}{\texttt{AGING\_RESULT}:\\136 ticks 内从 3\\提升至 0，未超时} & \texttt{usertests -q}: ALL TESTS PASSED \\
+    3 CPU & \texttt{prioritytest --smp: PASS}，输出 12 条指标 & \tabincell{c}{\texttt{AGING\_RESULT}:\\45 ticks 内从 3\\提升至 0，未超时} & \texttt{usertests -q}: ALL TESTS PASSED \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+在 Aging 日志中，单 CPU 场景的高优先级竞争进程数为 8，\texttt{high\_alive=8}，
+\texttt{timeout=0}；3 CPU 场景也得到相同的竞争进程数量与无超时结果。这里的
+\texttt{elapsed\_ticks} 只用于说明测试完成时机，不将一次本地回归误解为性能基准。
+测试脚本此前还暴露了在 macOS 上读取 Linux 环境文件的兼容问题，已增加通用后备
+路径，详见 \texttt{docs/bugs.md}。
