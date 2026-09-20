@@ -37,3 +37,12 @@
 - **验证**：clean build 成功；3 CPU QEMU 的 `usertests -q` 输出 `ALL TESTS PASSED`；单 CPU QEMU 临时集成测试覆盖优先级边界、非法参数、fork 继承、静态优先级顺序和 Aging 提升并输出 `abcdtest: PASS`；`nice` 查询、设置及非法参数检查符合预期。
 - **关联提交**：`631ee68 feat(sched): implement aging for waiting processes`、`43b682f feat(syscall): add priority control syscalls`
 - **状态**：已解决。
+
+## BUG-20260921-test-01：调度测试运行器在 macOS 上读取 Linux 环境信息失败
+
+- **类型**：测试工具跨平台兼容性问题
+- **现象**：在 macOS 执行 `tests/run_scheduler_tests.py` 时，尚未开始构建就因 `platform.freedesktop_os_release()` 找不到 `/etc/os-release` 和 `/usr/lib/os-release` 而退出。
+- **原因**：运行器记录环境信息时直接调用 Linux 专用 API，没有为 macOS 等非 Linux 系统提供后备路径。
+- **处理**：增加 `host_os_release()`，Linux 上继续使用发行版信息；其他系统回退到 `platform.system()` 和 `platform.release()`，不改变测试、构建和 QEMU 流程。
+- **验证**：在 macOS 上使用 QEMU 11.1.1 完成单 CPU 与 3 CPU 回归，`prioritytest`、`agingtest` 和 `usertests -q` 均通过。
+- **状态**：已解决。

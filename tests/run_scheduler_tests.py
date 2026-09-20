@@ -35,6 +35,14 @@ def version(command):
     return p.stdout.strip().splitlines()[0]
 
 
+def host_os_release():
+    """Return host release metadata on both Linux and non-Linux systems."""
+    try:
+        return platform.freedesktop_os_release()
+    except (AttributeError, OSError):
+        return {"NAME": platform.system(), "VERSION": platform.release()}
+
+
 def replace_function(source, signature, replacement):
     if source.count(signature) != 1:
         raise RuntimeError("unexpected kernel layout: " + signature)
@@ -209,7 +217,7 @@ def main():
     results = {"created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                "cpus": args.cpus, "repeat": args.repeat, "runs": [], "policy_sha256": {}}
     results["environment"] = {"platform": platform.platform(),
-                              "os_release": platform.freedesktop_os_release()}
+                              "os_release": host_os_release()}
     results["arguments"] = {**vars(args), "out": str(out)}
     # Record exact working files even when testing before the next Git commit.
     files = sorted(p for folder in ("kernel", "user", "tests")
