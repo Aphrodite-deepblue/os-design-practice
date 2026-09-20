@@ -1,0 +1,281 @@
+\chapter{设计与实现}
+
+\section{总体设计}
+
+本项目没有替换 xv6 的进程管理框架，而是在原有轮转调度路径上增加一层优先级选择。核心状态仍保存在 \texttt{struct proc} 中，进程状态仍遵循 \texttt{UNUSED}、\texttt{USED}、\texttt{SLEEPING}、\texttt{RUNNABLE}、\texttt{RUNNING} 和 \texttt{ZOMBIE} 的既有转换规则。新增逻辑只在持有相应 \texttt{p->lock} 时读取或修改调度字段，从而使实现能够适应 xv6 的多 CPU 配置。
+
+系统的主路径如图\ref{fig:architecture}所示。用户命令 \texttt{nice} 负责输入检查和结果显示；\texttt{setpriority}、\texttt{getpriority} 将用户请求转入内核；进程控制块保存 \texttt{priority} 与 \texttt{wait\_ticks}；调度器依据这两个字段完成最高优先级选择、同级轮转和 Aging。Aging 不是独立调度器，而是调度扫描中的一次状态更新，因此不会把本项目扩展为 MLFQ 或其他动态优先级模型。
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.98\textwidth]{priority-architecture-v2.png}
+  \caption{优先级调度功能的模块关系}
+  \label{fig:architecture}
+\end{figure}
+
+五个模块之间的边界较为清楚：用户态只通过系统调用修改可见属性，系统调用层只负责参数传递，内核进程函数负责校验和加锁，调度器负责选择，Aging 只处理长期等待。这样的拆分既便于五名成员分别开发，也减少了多处代码各自解释优先级语义的风险。
+
+本项目统一规定优先级范围为 0 至 31，数值越小表示优先级越高，默认值为 10。若可运行进程集合为 $R$，调度器首先计算
+\[
+  p_{\mathrm{best}}=\min_{p\in R}p.\mathrm{priority},
+\]
+再从满足 \texttt{priority == p\_best} 的进程中按轮转起点选择一个。这个过程把“不同优先级之间的先后关系”与“相同优先级之间的公平性”分开处理，便于检查每一步是否符合预期。
+
+\section{进程优先级数据}
+
+\subsection{字段与取值约定}
+
+\texttt{kernel/proc.h} 集中定义优先级边界、默认值和 Aging 阈值，并在进程控制块中增加两个字段。常量集中管理后，调度器、系统调用和进程创建代码都调用同一个 \texttt{priority\_valid()}，避免不同模块采用不一致的范围判断。关键定义见代码\ref{lst:proc-fields}。
+
+\begin{lstlisting}[caption={进程优先级常量与调度字段（\texttt{kernel/proc.h}）},label={lst:proc-fields}]
+#define PRIORITY_MIN     0
+#define PRIORITY_MAX     31
+#define PRIORITY_DEFAULT 10
+#define AGING_INTERVAL   50
+
+static inline int
+priority_valid(int priority)
+{
+  return priority >= PRIORITY_MIN &&
+         priority <= PRIORITY_MAX;
+}
+
+struct proc {
+  struct spinlock lock;
+  enum procstate state;
+  int pid;
+  int priority;
+  uint wait_ticks;
+  /* other xv6 process fields */
+};
+\end{lstlisting}
+
+\texttt{priority} 表示进程当前用于调度比较的值。它在通常情况下保持不变，只有用户显式设置或 Aging 生效时才发生改变。\texttt{wait\_ticks} 不是系统时钟的绝对 tick，而是进程保持 \texttt{RUNNABLE} 并被调度器扫描的等待轮次。采用扫描轮次可以把实现限制在 \texttt{proc.c} 内，不必修改时钟中断路径；其代价是该数值更适合表达“等待程度”，不应被解释为精确运行时间。
+
+\subsection{初始化、继承与回收}
+
+新增字段必须覆盖完整生命周期。\texttt{procinit()} 和 \texttt{allocproc()} 都把优先级设为 10、等待计数设为 0；前者建立进程表的初始不变量，后者保证复用槽位时再次初始化。\texttt{freeproc()} 在进程槽位回到 \texttt{UNUSED} 前恢复默认值，防止残留状态泄漏给后续进程。各阶段的处理见表\ref{tab:field-lifecycle}。
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{调度字段在进程生命周期中的处理}
+  \label{tab:field-lifecycle}
+  \begin{tabularx}{\textwidth}{C{3.2cm}X X}
+    \toprule
+    位置 & \texttt{priority} & \texttt{wait\_ticks} \\
+    \midrule
+    初始化与分配 & 设为默认值 10 & 清零 \\
+    fork & 继承父进程的加锁快照 & 清零 \\
+    获得 CPU & 保持当前值 & 清零 \\
+    手动设置优先级 & 写入校验后的新值 & 清零 \\
+    释放进程槽位 & 恢复默认值 10 & 清零 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+fork 继承不能直接读取父进程字段。主分支实现先获取父进程锁，保存优先级快照，再继续复制地址空间。子进程的 \texttt{np->lock} 由 \texttt{allocproc()} 保持，因此可直接写入继承值。若快照异常，则回退到默认优先级，保证子进程进入 \texttt{RUNNABLE} 前一定具有合法值。关键代码见代码\ref{lst:fork-inherit}。
+
+\begin{lstlisting}[caption={fork 中的优先级继承（\texttt{kernel/proc.c}）},label={lst:fork-inherit}]
+acquire(&p->lock);
+parent_priority = p->priority;
+release(&p->lock);
+
+/* Copy user memory and trapframe. */
+
+np->priority = priority_valid(parent_priority)
+             ? parent_priority
+             : PRIORITY_DEFAULT;
+np->wait_ticks = 0;
+\end{lstlisting}
+
+父进程锁只用于取得快照，没有跨越耗时的地址空间复制过程。这样既保护共享字段，也避免无谓延长临界区。子进程等待计数从 0 开始，因为它尚未参与过调度竞争，不能继承父进程此前积累的等待历史。
+
+\section{静态优先级调度}
+
+\subsection{两轮扫描策略}
+
+调度器采用两轮扫描。第一轮逐项获取进程锁，更新 Aging 状态，并在全部 \texttt{RUNNABLE} 进程中求出最小优先级。第二轮从当前 CPU 保存的 \texttt{next\_index} 开始环形遍历，选择一个优先级等于最优值的进程。选中后把状态改为 \texttt{RUNNING}，将等待计数清零，再调用 \texttt{swtch()} 完成上下文切换。
+
+代码\ref{lst:scheduler}展示了调度核心。第一轮把所有仍在等待的可运行进程计数加一，随后确定 \texttt{best\_priority}；第二轮再次检查状态与优先级。这次复查是必要的，因为在多 CPU 情况下，另一个 CPU 可能在两轮之间调度或修改候选进程。
+
+\begin{lstlisting}[caption={静态优先级调度与同级轮转核心（\texttt{kernel/proc.c}）},label={lst:scheduler}]
+int best_priority = PRIORITY_MAX + 1;
+int found = 0;
+
+for (p = proc; p < &proc[NPROC]; p++) {
+  acquire(&p->lock);
+  apply_aging(p);
+  if (p->state == RUNNABLE) {
+    p->wait_ticks++;
+    if (p->priority < best_priority) {
+      best_priority = p->priority;
+      found = 1;
+    }
+  }
+  release(&p->lock);
+}
+
+if (found) {
+  int selected = 0;
+  for (int offset = 0; offset < NPROC; offset++) {
+    int index = (next_index + offset) % NPROC;
+    p = &proc[index];
+    acquire(&p->lock);
+    if (p->state == RUNNABLE &&
+        p->priority == best_priority) {
+      p->state = RUNNING;
+      c->proc = p;
+      p->wait_ticks = 0;
+      swtch(&c->context, &p->context);
+      c->proc = 0;
+      next_index = (index + 1) % NPROC;
+      selected = 1;
+      release(&p->lock);
+      break;
+    }
+    release(&p->lock);
+  }
+  if (selected)
+    continue;
+}
+\end{lstlisting}
+
+这里没有在进程表外维护复杂的优先级队列。每轮扫描的时间复杂度仍为 $O(NPROC)$，与教学版 xv6 遍历进程表的思路一致。虽然两轮扫描增加了一次遍历，但它把“找出最高优先级”和“在同级中选择”拆开，代码更容易核查，也避免引入额外队列的一致性维护成本。
+
+\subsection{同优先级公平与多 CPU 处理}
+
+如果第二轮总从 \texttt{proc[0]} 开始，同一优先级下靠前的进程会反复先被发现。为此，每个 CPU 在进入 \texttt{scheduler()} 时建立局部变量 \texttt{next\_index}，初值为 \texttt{cpuid() \% NPROC}。进程运行结束并返回调度器后，起点移动到该进程的下一个槽位。由此，同一最优优先级内的进程按环形顺序获得机会。
+
+该公平机制是“基本公平”，并不承诺严格的全局轮转。每个 CPU 拥有独立起点，且进程状态会并发变化，因此实际顺序可能受唤醒、退出和其他 CPU 选择影响。但每个候选都必须在持锁后再次满足 \texttt{RUNNABLE} 和最优优先级条件，不会因为使用轮转起点而绕过 xv6 的锁和状态规则。
+
+若第一轮找到可运行进程，但第二轮没有成功选中，调度器不会立即执行 \texttt{wfi}。这种情况通常意味着候选在两轮间被其他 CPU 取走或改变状态；当前 CPU 会重新开始下一轮选择。只有第一轮确认没有任何可运行进程时，才进入等待中断状态。
+
+\section{Aging 防饥饿机制}
+
+静态优先级能够表达任务先后，但持续出现的高优先级任务可能使低优先级进程长期得不到 CPU。Aging 的目标是在不改变静态优先级框架的前提下，为持续等待的进程逐级提升调度机会。实现使用命名常量 \texttt{AGING\_INTERVAL=50}，避免在调度器中散落难以解释的数字。
+
+\begin{lstlisting}[caption={Aging 状态更新（\texttt{kernel/proc.c}）},label={lst:aging}]
+static void
+apply_aging(struct proc *p)
+{
+  if (p->state == RUNNABLE &&
+      p->wait_ticks >= AGING_INTERVAL &&
+      priority_valid(p->priority) &&
+      p->priority > PRIORITY_MIN) {
+    p->priority -= 1;
+    p->wait_ticks = 0;
+  }
+}
+\end{lstlisting}
+
+代码\ref{lst:aging}由调度器在持有 \texttt{p->lock} 时调用，只有 \texttt{RUNNABLE} 进程参与累计和提升。达到阈值后，优先级数值减一，即提升一级，同时清零等待计数。条件 \texttt{p->priority > PRIORITY\_MIN} 保证结果不会越过合法上界 0；\texttt{priority\_valid()} 则阻止异常字段继续参与提升。
+
+等待计数在三个位置重置。进程真正被分派时清零，表示此前等待已经结束；用户通过系统调用设置新优先级时清零，使新策略从完整周期开始生效；创建、fork 和回收时也清零，避免继承无关历史。睡眠进程不累计，因为它没有处于可调度但未被选择的状态。
+
+Aging 每次只提升一级，并在提升后重新等待一个完整阈值。设进程初始优先级为 $p_0$，连续等待并经历 $k$ 次提升后，其优先级满足
+\[
+  p_k=\max(\mathrm{PRIORITY\_MIN},\ p_0-k).
+\]
+因此，低优先级进程不会一步跳到最高优先级，也不会越界。该规则保留了静态优先级的主要排序，同时为长期等待者提供渐进式补偿。
+
+\section{系统调用与用户命令}
+
+\subsection{内核接口与调用链}
+
+项目增加 \texttt{setpriority(pid, priority)} 和 \texttt{getpriority(pid)} 两个系统调用，编号分别为 23 和 24。编号没有覆盖原有调用。完整链路包括 \texttt{kernel/syscall.h} 的编号、\texttt{kernel/syscall.c} 的分发表、\texttt{kernel/sysproc.c} 的参数入口、\texttt{kernel/proc.c} 的进程表操作，以及 \texttt{user/user.h} 和 \texttt{user/usys.pl} 的用户态声明与调用桩。
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{优先级系统调用的分层实现}
+  \label{tab:syscall-chain}
+  \begin{tabularx}{\textwidth}{C{3.4cm}X}
+    \toprule
+    文件 & 作用 \\
+    \midrule
+    \texttt{kernel/syscall.h} & 分配 23、24 两个系统调用编号 \\
+    \texttt{kernel/syscall.c} & 将编号映射到内核入口函数 \\
+    \texttt{kernel/sysproc.c} & 使用 \texttt{argint()} 读取 PID 与优先级参数 \\
+    \texttt{kernel/proc.c} & 校验参数、加锁遍历进程表并读写字段 \\
+    \texttt{user/user.h}、\texttt{user/usys.pl} & 声明用户接口并生成 \texttt{ecall} 调用桩 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+真正的状态修改集中在 \texttt{ksetpriority()} 中。函数先拒绝非正 PID 和非法优先级，再逐项加锁查找目标进程。命中后同时写入优先级并清零 \texttt{wait\_ticks}。查询函数采用相同的加锁遍历方式，先把字段复制到局部变量，再释放锁并返回，见代码\ref{lst:priority-kernel-api}。
+
+\begin{lstlisting}[caption={内核优先级读写接口（\texttt{kernel/proc.c}）},label={lst:priority-kernel-api}]
+int
+ksetpriority(int pid, int priority)
+{
+  struct proc *p;
+  if (pid <= 0 || !priority_valid(priority))
+    return -1;
+
+  for (p = proc; p < &proc[NPROC]; p++) {
+    acquire(&p->lock);
+    if (p->state != UNUSED && p->pid == pid) {
+      p->priority = priority;
+      p->wait_ticks = 0;
+      release(&p->lock);
+      return 0;
+    }
+    release(&p->lock);
+  }
+  return -1;
+}
+
+int
+kgetpriority(int pid)
+{
+  struct proc *p;
+  int priority;
+  if (pid <= 0)
+    return -1;
+
+  for (p = proc; p < &proc[NPROC]; p++) {
+    acquire(&p->lock);
+    if (p->state != UNUSED && p->pid == pid) {
+      priority = p->priority;
+      release(&p->lock);
+      return priority;
+    }
+    release(&p->lock);
+  }
+  return -1;
+}
+\end{lstlisting}
+
+\subsection{用户态 \texttt{nice} 命令}
+
+用户程序提供查询和设置两种形式：\texttt{nice pid} 查询指定进程，\texttt{nice pid priority} 设置新优先级。程序不直接使用宽松的 \texttt{atoi()}，而是逐字符检查数字、拒绝空字符串与非数字字符，并在十进制累加前检查 32 位有符号整数溢出。PID 为 0 会在用户态直接拒绝，超出 0 至 31 的优先级则由统一的内核校验返回失败。
+
+\begin{lstlisting}[caption={\texttt{nice} 命令的查询与设置分支（\texttt{user/nice.c}）},label={lst:nice-command}]
+if (argc == 2) {
+  priority = getpriority(pid);
+  if (priority < 0) {
+    fprintf(2, "nice: process %d not found\n", pid);
+    exit(1);
+  }
+  printf("pid %d priority = %d\n", pid, priority);
+  exit(0);
+}
+
+if (parse_nonnegative_int(argv[2], &priority) < 0) {
+  fprintf(2, "nice: invalid priority '%s'\n", argv[2]);
+  exit(1);
+}
+
+if (setpriority(pid, priority) < 0) {
+  fprintf(2, "nice: failed to set pid %d priority to %d\n",
+          pid, priority);
+  exit(1);
+}
+\end{lstlisting}
+
+Makefile 将 \texttt{\_nice} 加入 \texttt{UPROGS}，因此构建文件系统镜像时会自动安装该命令。用户输入检查、系统调用分层和内核范围校验共同构成完整接口：用户态负责给出明确错误信息，内核则始终保留最终校验权，避免其他用户程序绕过 \texttt{nice} 写入非法值。
+
+\section{测试与验证}
+
+% 第五阶段的具体测试内容按当前要求留空，待专项测试完成后补充。
