@@ -151,6 +151,8 @@ UPROGS=\
 	$U/_dorphan\
 	$U/_sync\
 	$U/_nice\
+	$U/_prioritytest\
+	$U/_agingtest\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
