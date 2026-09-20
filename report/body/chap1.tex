@@ -1,0 +1,33 @@
+\chapter{项目概述}
+
+\section{项目背景}
+
+本项目是“操作系统设计综合实践”课程的小组课题，开发基线为 xv6-RISC-V。xv6 原有调度器采用轮转方式遍历进程表，对所有可运行进程一视同仁。这种实现结构清楚，适合教学，但无法表达任务之间的优先级差异。项目在保留 xv6 进程状态转换和锁机制的前提下，引入静态优先级调度，并使用 Aging 缓解低优先级进程长期等待的问题。
+
+项目规定优先级取值范围为 0 至 31，数值越小表示优先级越高，默认值为 10。实现范围包括进程优先级字段、fork 继承、静态优先级调度、同级轮转、Aging、优先级系统调用和用户命令。
+代码仓库地址为：\href{https://github.com/Aphrodite-deepblue/os-design-practice}{\texttt{github.com/Aphrodite-deepblue/os-design-practice}}。
+
+\section{小组分工}
+
+小组按内核数据、调度策略、Aging、系统调用和测试五个模块分工。每项任务都对应明确的代码区域和 Git 提交，分工见表\ref{tab:team-work}。
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{第 35 组成员及分工}
+  \label{tab:team-work}
+  \begin{tabularx}{\textwidth}{C{1.5cm}C{2.4cm}C{2.5cm}X}
+    \toprule
+    姓名 & 学号 & GitHub 账号 & 主要任务 \\
+    \midrule
+    赖弈铭 & 3022002026 & \href{https://github.com/Aphrodite-deepblue}{\texttt{Aphrodite-deepblue}} & Aging、等待计数与防饥饿逻辑 \\
+    刘文睿 & 3023001172 & \href{https://github.com/milabo0718}{\texttt{milabo0718}} & 静态优先级调度与同优先级轮转 \\
+    吴雨桐 & 3022001567 & \href{https://github.com/Curtai123}{\texttt{Curtai123}} & 测试设计、集成验证与结果整理 \\
+    党正清 & 3023244304 & \href{https://github.com/dzq180}{\texttt{dzq180}} & 优先级系统调用与 \texttt{nice} 命令 \\
+    袁晟棋 & 3023244399 & \href{https://github.com/yuan-sq}{\texttt{yuan-sq}} & 进程优先级数据、fork 继承与集成 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{AI 使用情况}
+% 本节按要求留空。

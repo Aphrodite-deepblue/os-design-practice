@@ -1,0 +1,23 @@
+\chapter{问题分析与解决}
+
+\section{QEMU 启动时动态库符号不匹配}
+
+项目早期使用 Homebrew 安装的 QEMU 时，程序因找不到 \texttt{cs\_close} 符号而退出，机器上同时缺少 RISC-V 交叉编译工具链。该问题属于构建环境故障，与 xv6 内核代码无关。处理时安装 \texttt{riscv64-elf-gcc} 和 \texttt{riscv64-elf-binutils}，随后重装 QEMU 及其依赖，并在 Make 参数中使用 \texttt{riscv64-elf-} 工具链前缀。修复后 QEMU 能够引导 xv6 并进入 shell。
+
+\section{fork 继承优先级时缺少锁保护}
+
+最初的 \texttt{kfork()} 直接读取父进程的 \texttt{priority}。该字段会被系统调用修改，按 xv6 的进程字段约定应由 \texttt{p->lock} 保护。直接读取可能与并发写入发生竞争，也无法保证子进程获得一致快照。
+
+修复后的代码先获取父进程锁，把优先级保存到局部变量后立即释放，再完成后续内存复制和子进程初始化。子进程继承该快照；若值非法则使用默认优先级 10。这样既遵守了字段的锁语义，也避免在耗时的地址空间复制过程中长期持有父进程锁。
+
+\section{xPack QEMU 版本号解析失败}
+
+Makefile 原有正则只识别以 \texttt{QEMU emulator version} 开头的输出。xPack QEMU 9.2.4 在前面增加了 \texttt{xPack}，导致版本字符串未被提取，后续传给 \texttt{bc} 时出现语法错误和整数判断异常。
+
+修复时将开头的 \texttt{xPack} 设为可选部分，仍只提取主、次版本参与最低版本比较。改动没有放宽 QEMU 7.2 的最低要求：xPack 9.2.4 可以通过检查，旧版标准 QEMU 仍会被拒绝。
+
+\section{Aging 与手动调优的状态衔接}
+
+Aging 分支规定进程获得 CPU 后清零 \texttt{wait\_ticks}，而系统调用分支最初没有统一手动调优后的等待状态。如果保留旧计数，刚被用户设置为新优先级的进程可能立即触发 Aging，手动设置的效果会混入此前的等待历史。
+
+最终约定是：进程被调度运行时清零等待计数，\texttt{setpriority} 成功写入新优先级时也清零。两条路径都表示一次新的等待周期开始，语义简单，也便于说明和检查。该约定在模块合并时统一，并记录在 \texttt{docs/bugs.md} 中。
