@@ -1,0 +1,44 @@
+name: Task 5 scheduler tests
+
+on:
+  push:
+    paths:
+      - 'kernel/**'
+      - 'user/**'
+      - 'Makefile'
+      - 'tests/**'
+      - '.github/workflows/scheduler-tests.yml'
+  pull_request:
+    paths:
+      - 'kernel/**'
+      - 'user/**'
+      - 'Makefile'
+      - 'tests/**'
+      - '.github/workflows/scheduler-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  scheduler:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [single, smp, compare]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install xv6 toolchain
+        run: sudo apt-get update && sudo apt-get install -y gcc-riscv64-linux-gnu qemu-system-misc make perl bc
+      - name: Run real QEMU guests
+        run: |
+          case '${{ matrix.suite }}' in
+            single) python3 tests/run_scheduler_tests.py --cpus 1 --repeat 3 --regression quick --out tests/results/single ;;
+            smp) python3 tests/run_scheduler_tests.py --cpus 3 --repeat 3 --regression full --out tests/results/smp ;;
+            compare) python3 tests/run_scheduler_tests.py --compare --repeat 3 --out tests/results/compare ;;
+          esac
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: task5-${{ matrix.suite }}
+          path: tests/results/
+          if-no-files-found: error

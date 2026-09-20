@@ -20,6 +20,8 @@ TAGS
 *.log
 fs.img
 test-xv6.out
+/tests/results/
+__pycache__/
 
 # 编辑器/系统文件
 .vscode/
