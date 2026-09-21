@@ -37,22 +37,22 @@
     \column{0.43\textwidth}
       \begin{dutsection}{问题与目标}
         xv6 原有轮转调度把可运行进程近似等价对待，难以表达任务之间的紧急程度。
-        \vspace{0.06cm}
+        \vspace{0.04cm}
         \begin{itemize}
-          \setlength{\itemsep}{0.12cm}
+          \setlength{\itemsep}{0.10cm}
           \item 用静态优先级表达调度倾向；
           \item 保留同优先级进程的基本公平；
           \item 用 Aging 降低低优先级进程长期等待的风险。
         \end{itemize}
       \end{dutsection}
-      \vspace{0.18cm}
+      \vspace{0.14cm}
       \begin{dutsection}{统一约定}
         \centering
         \pill{0 最高}\quad\pill{10 默认}\quad\pill{31 最低}
       \end{dutsection}
     \column{0.54\textwidth}
       \begin{dutsection}{五人分工}
-        \scriptsize
+        \small
         \begin{tabularx}{\linewidth}{>{\bfseries\color{dutBlueDark}}p{1.28cm} X}
           赖弈铭 & Aging、等待时间累计与防饥饿逻辑 \\
           刘文睿 & 静态优先级调度与同级公平 \\
@@ -61,7 +61,7 @@
           袁晟棋 & 进程字段、默认值、fork 继承与集成 \\
         \end{tabularx}
       \end{dutsection}
-      \vspace{0.22cm}
+      \vspace{0.16cm}
       \smallnote{实现边界：保持 xv6 原有状态转换与锁语义，不引入 MLFQ、CFS 或复杂队列。}
   \end{columns}
 \end{dutframe}
@@ -69,9 +69,10 @@
 % 1:05 — 总体架构与优先级约定
 \begin{dutframe}{总体设计}{从用户命令到调度器}
   \centering
-  \includegraphics[width=0.62\textwidth]{assets/priority-architecture.png}
+  \includegraphics[width=0.62\textwidth,trim=0 0.70cm 0 1.15cm,clip]{assets/priority-architecture.png}
+  \vspace{-0.22cm}
   \dutcaption{图 1  优先级控制路径：用户态命令进入系统调用，最终影响进程字段与调度选择。}
-  \vspace{0.03cm}
+  \vspace{0.10cm}
   \begin{columns}[T,totalwidth=\textwidth]
     \column{0.31\textwidth}
       \begin{dutsection}{优先级语义}
