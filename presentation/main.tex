@@ -186,25 +186,28 @@
 
 % 1:15 — 模块 D：调度统计
 \begin{dutframe}{}{调度统计}
-  \begin{dutsection}{测试输出的指标}
+  \begin{dutsection}{单核混合负载：完成历时中位数（uptime ticks，n=3）}
     \small
-    \begin{tabularx}{\textwidth}{>{\bfseries\color{dutBlueDark}}p{2.45cm} >{\raggedright\arraybackslash}p{4.55cm} X}
-      \code{METRIC} & \code{prioritytest} 输出 case、PID、优先级、起止 tick 与 work。 & 比较同级公平和不同优先级的完成先后。 \\
-      \code{AGING\_RESULT} & 输出提升耗时、目标优先级、存活竞争者和超时标志。 & 直接判断 Aging 是否生效。 \\
-      \code{wait\_ticks} & 仍是内核中的等待累计字段，不新增持久化调度次数。 & 保持实现边界清晰，统计由测试侧汇总。
-    \end{tabularx}
+    {\renewcommand{\arraystretch}{1.08}
+    \begin{tabularx}{\textwidth}{>{\bfseries\color{dutBlueDark}\centering\arraybackslash}p{2.2cm} >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}X}
+      优先级 & 轮转 RR & 静态优先级 & 加入 Aging \\
+      3（高） & 9 & 4 & 3 \\
+      10（默认） & 9 & 8 & 6 \\
+      20（低） & 9 & 12 & 10 \\
+    \end{tabularx}}
   \end{dutsection}
-  \vspace{0.30cm}
+  \smallnote{三个进程同时释放，固定工作量，重复 3 次；数值为从释放到计算完成的中位 tick。}
+  \vspace{0.24cm}
   \begin{columns}[T,totalwidth=\textwidth]
     \column{0.47\textwidth}
-      \begin{dutsection}{当前实现边界}
+      \begin{dutsection}{指标如何读取}
         \small
-        内核保留 \code{priority} 与 \code{wait\_ticks} 两个核心字段；调度次数和运行时间不写入 \code{struct proc}，避免扩大课题范围。
+        \code{METRIC} 记录开始延迟和完成历时；\code{wait\_ticks} 是调度扫描累计值，不能当作实际运行时间。
       \end{dutsection}
     \column{0.47\textwidth}
-      \begin{dutsection}{实际回归}
+      \begin{dutsection}{结果怎么理解}
         \small
-        单 CPU 输出 6 条 \code{METRIC}，3 CPU 输出 12 条；两组 \code{agingtest} 和 \code{usertests -q} 均通过。
+        优先级 3 的完成历时由 RR 的 9 ticks 降至 4；优先级 20 延后完成，体现服务次序变化，不代表总吞吐量提高。
       \end{dutsection}
   \end{columns}
   \vfill
@@ -216,29 +219,34 @@
 % 0:30 — 模块 E：用户态测试
 \begin{dutframe}{}{用户态测试}
   \begin{columns}[T,totalwidth=\textwidth]
-    \column{0.53\textwidth}
-      \begin{dutsection}{测试矩阵}
+    \column{0.56\textwidth}
+      \begin{dutsection}{重复回归结果}
         \small
-        \begin{tabularx}{\linewidth}{>{\bfseries\color{dutBlueDark}}p{2.35cm} >{\raggedright\arraybackslash}X}
-          \code{prioritytest} & API 边界、\code{nice}、fork 继承、同级与混合优先级。 \\
-          \code{agingtest} & 8 个高优先级竞争者存在时，低优先级进程逐级提升。 \\
-          \code{usertests -q} & 进程退出后继续运行，检查原有 xv6 行为稳定性。
+        \begin{tabularx}{\linewidth}{>{\bfseries\color{dutBlueDark}}p{1.55cm} >{\raggedright\arraybackslash}X}
+          单 CPU & 专项测试各重复 3 次，快速 \code{usertests -q} 通过（7 PASS）。 \\
+          3 CPU & 专项测试各重复 3 次，完整 \code{usertests} 通过（7 PASS）。 \\
+          策略对照 & RR、priority、Aging 各重复 3 次；12 PASS、4 EXPECTED\_FAIL、0 FAIL。
         \end{tabularx}
       \end{dutsection}
-    \column{0.40\textwidth}
-      \begin{dutsection}{程序与日志}
+      \vspace{0.20cm}
+      \begin{dutsection}{基础覆盖}
         \small
-        \code{tests/run\_scheduler\_tests.py} 构建镜像、启动 QEMU，并保存原始日志、\code{results.json} 与 \code{metrics.csv}。
+        \code{prioritytest} 检查 API 边界、\code{nice}、fork 继承、同级公平及不同优先级；\code{agingtest} 检查持续竞争下的低优先级进程。
       \end{dutsection}
-      \vspace{0.25cm}
-      \begin{dutsection}{当前状态}
+    \column{0.38\textwidth}
+      \begin{dutsection}{负向对照也符合预期}
         \small
-        单 CPU 与 3 CPU 均为 PASS；Aging 分别在 136 与 45 ticks 内完成，且未发生超时。
+        关闭 Aging 后，3/3 轮在 256 ticks 超时，目标仍为优先级 3，8 个竞争进程存活；启用 Aging 后 3/3 轮通过，目标降至优先级 0。
+      \end{dutsection}
+      \vspace{0.20cm}
+      \begin{dutsection}{证据与版本}
+        \small
+        原始 QEMU 日志、构建日志、CSV 和 JSON 已归档；这些结果对应测试报告记录的源码提交，不是对当前 \code{main} 的重新回归。
       \end{dutsection}
   \end{columns}
   \vfill
   \centering
-  \smallnote{结果来自当前 main 快照的真实 QEMU 回归；不将一次运行当作性能基准。}
+  \smallnote{归档来自队友的 \code{docs/task5-test-report} 分支；single / SMP 为 \code{7c22218}，compare 为 \code{a2e5630}。}
 \end{dutframe}
 
 % 0:10 — 独立结尾页
