@@ -1,0 +1,10 @@
+
+xv6 kernel is booting
+
+init: starting sh
+$ agingtest
+AGING_RESULT elapsed_ticks=256 requested=3 observed=3 high_alive=8 timeout=1
+agingtest: FAIL reason=timeout while high-priority competitors remained alive
+$ echo TASK5_POST_EXIT_OK
+TASK5_POST_EXIT_OK
+qemu-system-riscv64: terminating on signal 15 from pid 5003 (python3)

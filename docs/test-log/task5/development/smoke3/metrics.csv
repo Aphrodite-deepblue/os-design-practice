@@ -1,0 +1,7 @@
+policy,cpus,repeat,case,id,pid,priority,start_ticks,finish_ticks,work
+aging,1,1,equal,0,48,10,0,10,120000000
+aging,1,1,equal,1,49,10,1,10,120000000
+aging,1,1,equal,2,50,10,2,10,120000000
+aging,1,1,mixed,0,51,3,0,4,120000000
+aging,1,1,mixed,1,52,10,4,7,120000000
+aging,1,1,mixed,2,53,20,7,10,120000000

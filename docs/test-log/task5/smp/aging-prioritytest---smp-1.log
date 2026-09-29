@@ -1,0 +1,36 @@
+
+xv6 kernel is booting
+
+hart 1 starting
+hart 2 starting
+init: starting sh
+$ prioritytest --smp
+CASE api boundaries invalid-values missing-pids PASS
+CASE fork-inheritance independent-copy exit slot-reuse PASS
+pid 3 priority = 0
+pid 3 priority changed to 2
+nice: failed to set pid 3 priority to 32
+nice: process 2147483647 not found
+nice: invalid pid '999999999999999999999'
+nice: invalid pid 'abc'
+nice: invalid priority '-1'
+usage: nice pid [priority]
+CASE nice query set invalid-input exit-status PASS
+METRIC case=equal id=0 pid=48 priority=10 start_ticks=0 finish_ticks=6 work=120000000
+METRIC case=equal id=1 pid=49 priority=10 start_ticks=1 finish_ticks=6 work=120000000
+METRIC case=equal id=2 pid=50 priority=10 start_ticks=1 finish_ticks=7 work=120000000
+METRIC case=equal id=3 pid=51 priority=10 start_ticks=1 finish_ticks=7 work=120000000
+METRIC case=equal id=4 pid=52 priority=10 start_ticks=2 finish_ticks=8 work=120000000
+METRIC case=equal id=5 pid=53 priority=10 start_ticks=2 finish_ticks=7 work=120000000
+CASE equal workers=6 PASS
+METRIC case=mixed id=0 pid=54 priority=3 start_ticks=0 finish_ticks=4 work=120000000
+METRIC case=mixed id=1 pid=55 priority=10 start_ticks=1 finish_ticks=5 work=120000000
+METRIC case=mixed id=2 pid=56 priority=20 start_ticks=4 finish_ticks=9 work=120000000
+METRIC case=mixed id=3 pid=57 priority=3 start_ticks=1 finish_ticks=4 work=120000000
+METRIC case=mixed id=4 pid=58 priority=10 start_ticks=2 finish_ticks=6 work=120000000
+METRIC case=mixed id=5 pid=59 priority=20 start_ticks=5 finish_ticks=8 work=120000000
+CASE mixed workers=6 PASS
+prioritytest: PASS
+$ echo TASK5_POST_EXIT_OK
+TASK5_POST_EXIT_OK
+qemu-system-riscv64: terminating on signal 15 from pid 4429 (python3)
