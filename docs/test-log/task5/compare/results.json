@@ -1,0 +1,894 @@
+{
+  "created_utc": "2026-09-20T14:12:34Z",
+  "cpus": 1,
+  "repeat": 3,
+  "runs": [
+    {
+      "command": "prioritytest bench",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "prioritytest: PASS\n",
+      "host_seconds": 2.6,
+      "log": "rr-prioritytest-bench-1.log",
+      "metrics": [
+        {
+          "case": "equal",
+          "id": 0,
+          "pid": 4,
+          "priority": 10,
+          "start_ticks": 0,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 1,
+          "pid": 5,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 2,
+          "pid": 6,
+          "priority": 10,
+          "start_ticks": 2,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 0,
+          "pid": 7,
+          "priority": 3,
+          "start_ticks": 0,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 1,
+          "pid": 8,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 2,
+          "pid": 9,
+          "priority": 20,
+          "start_ticks": 2,
+          "finish_ticks": 9,
+          "work": 120000000
+        }
+      ],
+      "aging": null,
+      "policy": "rr",
+      "repeat": 1
+    },
+    {
+      "command": "prioritytest bench",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "prioritytest: PASS\n",
+      "host_seconds": 2.568,
+      "log": "rr-prioritytest-bench-2.log",
+      "metrics": [
+        {
+          "case": "equal",
+          "id": 0,
+          "pid": 4,
+          "priority": 10,
+          "start_ticks": 0,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 1,
+          "pid": 5,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 2,
+          "pid": 6,
+          "priority": 10,
+          "start_ticks": 2,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 0,
+          "pid": 7,
+          "priority": 3,
+          "start_ticks": 0,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 1,
+          "pid": 8,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 2,
+          "pid": 9,
+          "priority": 20,
+          "start_ticks": 2,
+          "finish_ticks": 9,
+          "work": 120000000
+        }
+      ],
+      "aging": null,
+      "policy": "rr",
+      "repeat": 2
+    },
+    {
+      "command": "prioritytest bench",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "prioritytest: PASS\n",
+      "host_seconds": 2.563,
+      "log": "rr-prioritytest-bench-3.log",
+      "metrics": [
+        {
+          "case": "equal",
+          "id": 0,
+          "pid": 4,
+          "priority": 10,
+          "start_ticks": 0,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 1,
+          "pid": 5,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 2,
+          "pid": 6,
+          "priority": 10,
+          "start_ticks": 2,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 0,
+          "pid": 7,
+          "priority": 3,
+          "start_ticks": 0,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 1,
+          "pid": 8,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 2,
+          "pid": 9,
+          "priority": 20,
+          "start_ticks": 2,
+          "finish_ticks": 9,
+          "work": 120000000
+        }
+      ],
+      "aging": null,
+      "policy": "rr",
+      "repeat": 3
+    },
+    {
+      "command": "prioritytest",
+      "cpus": 1,
+      "status": "EXPECTED_FAIL",
+      "detail": "prioritytest: FAIL reason=single-CPU priority isolation\n",
+      "host_seconds": 2.734,
+      "log": "rr-order-negative.log",
+      "metrics": [
+        {
+          "case": "equal",
+          "id": 0,
+          "pid": 48,
+          "priority": 10,
+          "start_ticks": 0,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 1,
+          "pid": 49,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 2,
+          "pid": 50,
+          "priority": 10,
+          "start_ticks": 2,
+          "finish_ticks": 10,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 0,
+          "pid": 51,
+          "priority": 3,
+          "start_ticks": 0,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 1,
+          "pid": 52,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 2,
+          "pid": 53,
+          "priority": 20,
+          "start_ticks": 2,
+          "finish_ticks": 10,
+          "work": 120000000
+        }
+      ],
+      "aging": null,
+      "policy": "rr",
+      "repeat": 0
+    },
+    {
+      "command": "prioritytest bench",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "prioritytest: PASS\n",
+      "host_seconds": 3.411,
+      "log": "priority-prioritytest-bench-1.log",
+      "metrics": [
+        {
+          "case": "equal",
+          "id": 0,
+          "pid": 4,
+          "priority": 10,
+          "start_ticks": 0,
+          "finish_ticks": 12,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 1,
+          "pid": 5,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 12,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 2,
+          "pid": 6,
+          "priority": 10,
+          "start_ticks": 2,
+          "finish_ticks": 14,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 0,
+          "pid": 7,
+          "priority": 3,
+          "start_ticks": 0,
+          "finish_ticks": 4,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 1,
+          "pid": 8,
+          "priority": 10,
+          "start_ticks": 4,
+          "finish_ticks": 8,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 2,
+          "pid": 9,
+          "priority": 20,
+          "start_ticks": 8,
+          "finish_ticks": 12,
+          "work": 120000000
+        }
+      ],
+      "aging": null,
+      "policy": "priority",
+      "repeat": 1
+    },
+    {
+      "command": "agingtest",
+      "cpus": 1,
+      "status": "EXPECTED_FAIL",
+      "detail": "agingtest: FAIL reason=timeout while high-priority competitors remained alive\n",
+      "host_seconds": 27.093,
+      "log": "priority-agingtest-1.log",
+      "metrics": [],
+      "aging": {
+        "elapsed_ticks": 256,
+        "requested": 3,
+        "observed": 3,
+        "high_alive": 8,
+        "timeout": 1
+      },
+      "policy": "priority",
+      "repeat": 1
+    },
+    {
+      "command": "prioritytest bench",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "prioritytest: PASS\n",
+      "host_seconds": 3.333,
+      "log": "priority-prioritytest-bench-2.log",
+      "metrics": [
+        {
+          "case": "equal",
+          "id": 0,
+          "pid": 4,
+          "priority": 10,
+          "start_ticks": 0,
+          "finish_ticks": 12,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 1,
+          "pid": 5,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 12,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 2,
+          "pid": 6,
+          "priority": 10,
+          "start_ticks": 2,
+          "finish_ticks": 12,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 0,
+          "pid": 7,
+          "priority": 3,
+          "start_ticks": 0,
+          "finish_ticks": 4,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 1,
+          "pid": 8,
+          "priority": 10,
+          "start_ticks": 4,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 2,
+          "pid": 9,
+          "priority": 20,
+          "start_ticks": 9,
+          "finish_ticks": 14,
+          "work": 120000000
+        }
+      ],
+      "aging": null,
+      "policy": "priority",
+      "repeat": 2
+    },
+    {
+      "command": "agingtest",
+      "cpus": 1,
+      "status": "EXPECTED_FAIL",
+      "detail": "agingtest: FAIL reason=timeout while high-priority competitors remained alive\n",
+      "host_seconds": 27.07,
+      "log": "priority-agingtest-2.log",
+      "metrics": [],
+      "aging": {
+        "elapsed_ticks": 256,
+        "requested": 3,
+        "observed": 3,
+        "high_alive": 8,
+        "timeout": 1
+      },
+      "policy": "priority",
+      "repeat": 2
+    },
+    {
+      "command": "prioritytest bench",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "prioritytest: PASS\n",
+      "host_seconds": 3.301,
+      "log": "priority-prioritytest-bench-3.log",
+      "metrics": [
+        {
+          "case": "equal",
+          "id": 0,
+          "pid": 4,
+          "priority": 10,
+          "start_ticks": 0,
+          "finish_ticks": 14,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 1,
+          "pid": 5,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 13,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 2,
+          "pid": 6,
+          "priority": 10,
+          "start_ticks": 2,
+          "finish_ticks": 14,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 0,
+          "pid": 7,
+          "priority": 3,
+          "start_ticks": 0,
+          "finish_ticks": 4,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 1,
+          "pid": 8,
+          "priority": 10,
+          "start_ticks": 4,
+          "finish_ticks": 8,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 2,
+          "pid": 9,
+          "priority": 20,
+          "start_ticks": 8,
+          "finish_ticks": 12,
+          "work": 120000000
+        }
+      ],
+      "aging": null,
+      "policy": "priority",
+      "repeat": 3
+    },
+    {
+      "command": "agingtest",
+      "cpus": 1,
+      "status": "EXPECTED_FAIL",
+      "detail": "agingtest: FAIL reason=timeout while high-priority competitors remained alive\n",
+      "host_seconds": 27.065,
+      "log": "priority-agingtest-3.log",
+      "metrics": [],
+      "aging": {
+        "elapsed_ticks": 256,
+        "requested": 3,
+        "observed": 3,
+        "high_alive": 8,
+        "timeout": 1
+      },
+      "policy": "priority",
+      "repeat": 3
+    },
+    {
+      "command": "prioritytest bench",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "prioritytest: PASS\n",
+      "host_seconds": 2.625,
+      "log": "aging-prioritytest-bench-1.log",
+      "metrics": [
+        {
+          "case": "equal",
+          "id": 0,
+          "pid": 4,
+          "priority": 10,
+          "start_ticks": 0,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 1,
+          "pid": 5,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 2,
+          "pid": 6,
+          "priority": 10,
+          "start_ticks": 2,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 0,
+          "pid": 7,
+          "priority": 3,
+          "start_ticks": 0,
+          "finish_ticks": 3,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 1,
+          "pid": 8,
+          "priority": 10,
+          "start_ticks": 3,
+          "finish_ticks": 6,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 2,
+          "pid": 9,
+          "priority": 20,
+          "start_ticks": 6,
+          "finish_ticks": 9,
+          "work": 120000000
+        }
+      ],
+      "aging": null,
+      "policy": "aging",
+      "repeat": 1
+    },
+    {
+      "command": "agingtest",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "agingtest: PASS\n",
+      "host_seconds": 15.007,
+      "log": "aging-agingtest-1.log",
+      "metrics": [],
+      "aging": {
+        "elapsed_ticks": 136,
+        "requested": 3,
+        "observed": 0,
+        "high_alive": 8,
+        "timeout": 0
+      },
+      "policy": "aging",
+      "repeat": 1
+    },
+    {
+      "command": "prioritytest bench",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "prioritytest: PASS\n",
+      "host_seconds": 2.652,
+      "log": "aging-prioritytest-bench-2.log",
+      "metrics": [
+        {
+          "case": "equal",
+          "id": 0,
+          "pid": 4,
+          "priority": 10,
+          "start_ticks": 0,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 1,
+          "pid": 5,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 2,
+          "pid": 6,
+          "priority": 10,
+          "start_ticks": 2,
+          "finish_ticks": 10,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 0,
+          "pid": 7,
+          "priority": 3,
+          "start_ticks": 0,
+          "finish_ticks": 3,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 1,
+          "pid": 8,
+          "priority": 10,
+          "start_ticks": 3,
+          "finish_ticks": 7,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 2,
+          "pid": 9,
+          "priority": 20,
+          "start_ticks": 7,
+          "finish_ticks": 10,
+          "work": 120000000
+        }
+      ],
+      "aging": null,
+      "policy": "aging",
+      "repeat": 2
+    },
+    {
+      "command": "agingtest",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "agingtest: PASS\n",
+      "host_seconds": 15.015,
+      "log": "aging-agingtest-2.log",
+      "metrics": [],
+      "aging": {
+        "elapsed_ticks": 136,
+        "requested": 3,
+        "observed": 0,
+        "high_alive": 8,
+        "timeout": 0
+      },
+      "policy": "aging",
+      "repeat": 2
+    },
+    {
+      "command": "prioritytest bench",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "prioritytest: PASS\n",
+      "host_seconds": 2.645,
+      "log": "aging-prioritytest-bench-3.log",
+      "metrics": [
+        {
+          "case": "equal",
+          "id": 0,
+          "pid": 4,
+          "priority": 10,
+          "start_ticks": 0,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 1,
+          "pid": 5,
+          "priority": 10,
+          "start_ticks": 1,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "equal",
+          "id": 2,
+          "pid": 6,
+          "priority": 10,
+          "start_ticks": 2,
+          "finish_ticks": 9,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 0,
+          "pid": 7,
+          "priority": 3,
+          "start_ticks": 0,
+          "finish_ticks": 3,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 1,
+          "pid": 8,
+          "priority": 10,
+          "start_ticks": 3,
+          "finish_ticks": 6,
+          "work": 120000000
+        },
+        {
+          "case": "mixed",
+          "id": 2,
+          "pid": 9,
+          "priority": 20,
+          "start_ticks": 6,
+          "finish_ticks": 10,
+          "work": 120000000
+        }
+      ],
+      "aging": null,
+      "policy": "aging",
+      "repeat": 3
+    },
+    {
+      "command": "agingtest",
+      "cpus": 1,
+      "status": "PASS",
+      "detail": "agingtest: PASS\n",
+      "host_seconds": 15.029,
+      "log": "aging-agingtest-3.log",
+      "metrics": [],
+      "aging": {
+        "elapsed_ticks": 136,
+        "requested": 3,
+        "observed": 0,
+        "high_alive": 8,
+        "timeout": 0
+      },
+      "policy": "aging",
+      "repeat": 3
+    }
+  ],
+  "policy_sha256": {
+    "rr": "c1afc478d3494414d7ee46ba1def1eb84ac501c0610b7f7744e0c14718f77cad",
+    "priority": "c5dac5d8e798b4c37a283a9a3dc769faa738044c686ff55fc1884b5ffaf537fb",
+    "aging": "ac91d03d285a0e2f98846b46b692337c75e94d51806d02b3d003d92034e2282c"
+  },
+  "environment": {
+    "platform": "Linux-6.6.114.1-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "os_release": {
+      "NAME": "Debian GNU/Linux",
+      "ID": "debian",
+      "PRETTY_NAME": "Debian GNU/Linux forky/sid",
+      "VERSION_CODENAME": "forky",
+      "HOME_URL": "https://www.debian.org/",
+      "SUPPORT_URL": "https://www.debian.org/support",
+      "BUG_REPORT_URL": "https://bugs.debian.org/"
+    }
+  },
+  "arguments": {
+    "cpus": 1,
+    "repeat": 3,
+    "regression": "quick",
+    "compare": true,
+    "out": "/src/tests/results/compare"
+  },
+  "source_sha256": {
+    "kernel/bio.c": "6b8e5acdf03b05ca87f9b991eab680b4fb189b4e6f3f178ba6dc8b201b5bc88a",
+    "kernel/buf.h": "4945c3dd607f1cec7c7691bdfcd42f5fc3cb6313b3e023e4a04d74d045686d19",
+    "kernel/console.c": "12b0e23ebf8249596a5ff8b59e1c0cac99473b2e2aab58e64991ca2f6777a18f",
+    "kernel/defs.h": "2b9c811b9d0408279b78c846b8919460c15b6d9aff5881869ff27eb942dc74fd",
+    "kernel/elf.h": "e755d66ef1e59c236df89cb189b646e970cd5074adb8abaf9a2e2c8417f5c258",
+    "kernel/entry.S": "b8d14de948a818d59ae77052f71cdb0d53b3deccca2b405cbdb748bff84e3c50",
+    "kernel/exec.c": "429b3292feba80d44ab7e28119750506292cbae6e35dc1bd3ac87232d57d998e",
+    "kernel/fcntl.h": "c4c0756cb439c1d0fc1e297e4d92b80e1edf13a0dc83e14cfc7960ff9d3e56f0",
+    "kernel/file.c": "e5cc4366172b9dad38316f2d6fb2959cb430523e4fff18a565518ef25985752e",
+    "kernel/file.h": "7e73f3bcea55a904ade1ad3f966a9b82225bbd204f6243aa97bd854560489f37",
+    "kernel/fs.c": "54a22144721032c4a994c07ffd3f5e23263a661037d88dc2cbea33bcd2eb7e14",
+    "kernel/fs.h": "9f3c653a0b650d44a2f3a1f5d604e34cfd1bac5672100bd6a7cabd3c387be2d6",
+    "kernel/kalloc.c": "84c0abd945d3aed3816844576e8a45eec659451c271b013469317dd7e027b411",
+    "kernel/kernel.ld": "62a2ca4201d170b8e89bc70ffa826f80433b07a9ab0ffddae2b20d1393508539",
+    "kernel/kernelvec.S": "8504054f0a76ebbff9756bd388a375d79210488754c575359e60508851db8948",
+    "kernel/log.c": "39ab389f09798d42cc4d3118442b9706bf56ffd8f5d11cc8b23ac73a016d929d",
+    "kernel/main.c": "5c5ec35eefcce878ac795c51a4007c91cf39c26d2b09ca5d2329262e0eca6b3c",
+    "kernel/memlayout.h": "0adb671b174ab09e819d060501de6a5a6af7c325e11f2f31b690d1e86d4200c2",
+    "kernel/param.h": "e36ca7ec4984611bcdd779e34473c3e6fbf848371de557bdefbeeef6524b7009",
+    "kernel/pipe.c": "c1b89c5611ea4375ebe61ade8098b643b05ae7173dd1b3c5225328a3df1d25da",
+    "kernel/plic.c": "068346f2ae342601f3d45d0812cf32b4ff1ae60a5cba69dc4e74fc0ffb2cd5d6",
+    "kernel/printk.c": "22bc7ed8efebddcd94ae6ca3b264af691f0b858a5482fe8d6b7e93278701558e",
+    "kernel/proc.c": "ffd0a9992152184a2253f17a1ef75fc41b07cc3ff2eb3cdcedcca3b93dac4f3f",
+    "kernel/proc.h": "dd1d8f232707e846e27d13b2cea7ed11fb5ce09f05c9f7f1cd8ff069899598cf",
+    "kernel/riscv.h": "5fac4b1cef3c7db9239ebe6e7bdb05fc9d1872b711cc4a813bfcfeb34ecebc2e",
+    "kernel/sleeplock.c": "35e7156e4e511292af86ee0bd0595b7ba9eefa03a1a8a63b47da3cd47916982a",
+    "kernel/sleeplock.h": "29c22dbbf25febcef8ae4f5f29275d48c29fabc280bc6a1dcc3fe6e3f4263fdb",
+    "kernel/spinlock.c": "c3ecf191d645015f984ceb542587f50fe2b0ec13918467f52a5b4a5fbbed2d82",
+    "kernel/spinlock.h": "cc78ede71b6e071bd771e7ca6aa448f17ce8a20bb408562e4c3be58613b6a634",
+    "kernel/start.c": "44188af2d08697dfa4bd1c894aff5dd7125bf5adf03e3a9553b662fefdc97a73",
+    "kernel/stat.h": "adbfa7ed291433bc4d3d8e0f8c2473834d63833bbd995cf53ea6470d50180534",
+    "kernel/string.c": "6862351804ecee9145225256d1c2ab46b715a92dc0ee424b005faaada78e61d8",
+    "kernel/swtch.S": "a84898f5207a8126e207b90826c7e1091ec1db956358cf37098213fa991341db",
+    "kernel/syscall.c": "343ca48627cd309a3a29038b69ef7bda0fe6a579a326dacb278b7071e6359cfa",
+    "kernel/syscall.h": "770ee1d9fc4d651bb615118f6b693291324c4c37a2d3c50de6072cb0b2713627",
+    "kernel/sysfile.c": "91ef169d2e16d9e2476f2f0f91bfaa728b3b126c2ddff038c24db4931395f69e",
+    "kernel/sysproc.c": "4abf969c2ba55449a4758a49dc56b730ca1554f071cd4d4303c08e44ca1c4361",
+    "kernel/trampoline.S": "50c68daa571d7dea7e17bdb3d15e97567130fc1be957074de841541c97397594",
+    "kernel/trap.c": "e045a736979134cf1adb0798fc7c1f4e6f300581c49cc09cd32c79f68c656b37",
+    "kernel/types.h": "66a559faef66ab2564b79b38fa8cb8ce237da643a242852095f4159c67d065e2",
+    "kernel/uart.c": "64fbd999407f9bfb56a3ad53a3d028106e659a4092d43be64bf476e9f4d28bc6",
+    "kernel/virtio.h": "b53c641f90abb43dabda67346b27e8c68bb308e60587aa6a8a290cab1f086553",
+    "kernel/virtio_disk.c": "cfa8c87289f5fe5cf9e6494f1e056d490f502b0f48aef1940d53843edd20d7a6",
+    "kernel/vm.c": "325d40ea7a2e13cc24b57feb0cbc30c308e1b75ba1d2996fb04ad1188a5aa6a6",
+    "kernel/vm.h": "3e3594d1316fd65a723362caa84136649888dfde7cf00b802d16b516a011f5b7",
+    "tests/rr_scheduler.c": "ea882d00e03749700032325a42a9cce62d9bfb77ef0e45ea01634b16e319cc38",
+    "tests/run_scheduler_tests.py": "e80c9b2e87724d7f0864a8b87799727154ab3d0f2b71f7317f842a37db6f25d1",
+    "tests/summarize_results.py": "1f41e0670b8fdfef8310567b31054fc7e7978a713ac624878ef0e832c197f2a8",
+    "user/agingtest.c": "fb883c47af7a6a1095c308b7b4eab61254cd5e8dfe7dd37ddb34104dfafadf9b",
+    "user/cat.c": "6d3d3ed6aecfe96215cfcc7ca279333f005d87ec3cc9eadfb5d02f4f474c6884",
+    "user/dorphan.c": "bed04a570b787a6f95ac63d3c08e8692b0172e46025b644709147cd7f67baf31",
+    "user/echo.c": "90dd4be4fd6b2f3579c59637676635edf5de4505e90e8da538a158f0f2eeeca8",
+    "user/forktest.c": "06c5a0f1c07ba4a2785cc78152bb58f75e078c6b40d4e019e934945edb2fbae6",
+    "user/forphan.c": "0a3c31837b516cc35bee3b773688ac08e30d2d5eef70e10e0fb729dcd3eac5f4",
+    "user/grep.c": "ba7324c21c42134f6f1e3e9118cc7e4b16b1ea0648ba9ac8cba115e52775a3e9",
+    "user/grind.c": "4dd9f27def61714df741b837d235e5b4b04e1ee19fba1ad7ad0cfe64a0579cad",
+    "user/init.c": "2bf06e8a02db8d144c702a351590a7ab32252048b4b36ed003414cf17c330b88",
+    "user/kill.c": "f3b97388ed13e7f155e0a6c51ead59d84138df5dd6ddebd0316e47f1e0930b86",
+    "user/ln.c": "f8a026d5b8e122fc4381d716dae2c11fdb290c5eb0bdb9a701a6638c33376b04",
+    "user/logstress.c": "9b1246d6dadf53e30c10eed7c2467b822f8b84c34ae716c84f8be43452cbcdee",
+    "user/ls.c": "317bca83fa713e03d07bc795ddd234676d998718e1a68110a7b419aef72ee65e",
+    "user/mkdir.c": "5e8e611a47b91e420d0235b6888a35c64bc48662da01d9992eb1364115e5a4c9",
+    "user/nice.c": "d723bf803bed0ca8f22ad425208b6a6601a8a4834ede4c8adfdf933edfdc7a14",
+    "user/printf.c": "bdfc2ab1d3cf07f826eb12a3fd5ec7635f16ee7465b2462b725443319e2dea16",
+    "user/prioritytest.c": "9999fecfcb28b9343d9c1825c40d1344888a1c5a79688988282ab55f34a14a3b",
+    "user/rm.c": "2267865dd1bd8ee2282df76a1d173c92105b2b8627fb2b278a70c4f330772bff",
+    "user/schedtest.h": "286185937f36e5b5978b08106e100ae79512005afe018747b195781edcb1fe3a",
+    "user/sh.c": "4a542bec8354ba94c56978d0666352a2567afe2e84bd5652e142916295d6c75a",
+    "user/stressfs.c": "97eca143a2274382d5f656d4ca2c420b6ca2327e2566ed6f1dc4b50375ab41e2",
+    "user/sync.c": "deacff6d6fa76c37e16491b48239cc0250e1ad28e53a8028bf83d9b8a6321fca",
+    "user/ulib.c": "3da11ac3e58669d91c77e150f09196acc8c3d1802110f2b62d83d11d0e852b09",
+    "user/umalloc.c": "229df7d8749d18025650429543d7feaa0ee9652467330106e856a8390c645586",
+    "user/user.h": "cbbc1537b3743f6ff07839c6e5e801ddbc369faef0bb60f4447a5b349576cd1c",
+    "user/user.ld": "7a8d86dd343c5d23a0cb15859296ab5b395b1f6cd9cb4121c961ca8c064b3f2b",
+    "user/usertests.c": "cf47306c45d3740f58ffa169986785f5148582241063772865c5ffbb0b4a11b6",
+    "user/usys.pl": "4ff855c5276bcf7ed2868fa906b3a3fa13e5fdb22c83d303b4117e4c57e577d2",
+    "user/wc.c": "634b92e22cb2c2e0a92c0f5ecf790ce879bfb2d1b24fb773710420797b62ccf3",
+    "user/zombie.c": "527f0f5c47a3c70c4087d28662224becd3decce90df55f71f963aa430789f33f",
+    "Makefile": "6f234d3966d572b35db7dd0de863a40e683f1c1b135743d111a4a8c784800d9d"
+  },
+  "source_commit": "a2e5630489d6586da3f9f7bd390b71e96d5e22a8",
+  "qemu": "QEMU emulator version 11.1.0 (Debian 1:11.1.0+ds-2)",
+  "compiler": "riscv64-linux-gnu-gcc (Debian 16.2.0-2) 16.2.0",
+  "success": true
+}

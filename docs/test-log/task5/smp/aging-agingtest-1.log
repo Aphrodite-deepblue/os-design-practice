@@ -1,0 +1,14 @@
+
+xv6 kernel is booting
+
+hart 2 starting
+hart 1 starting
+init: starting sh
+$ agingtest
+AGING promotion elapsed_ticks=17 observed_priority=2
+AGING promotion elapsed_ticks=31 observed_priority=1
+AGING_RESULT elapsed_ticks=47 requested=3 observed=0 high_alive=8 timeout=0
+agingtest: PASS
+$ echo TASK5_POST_EXIT_OK
+TASK5_POST_EXIT_OK
+qemu-system-riscv64: terminating on signal 15 from pid 4429 (python3)

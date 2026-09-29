@@ -1,0 +1,20 @@
+
+xv6 kernel is booting
+
+init: starting sh
+$ prioritytest
+CASE api boundaries invalid-values missing-pids PASS
+CASE fork-inheritance independent-copy exit slot-reuse PASS
+pid 3 priority = 0
+pid 3 priority changed to 2
+nice: failed to set pid 3 priority to 32
+nice: process 2147483647 not found
+nice: invalid pid '999999999999999999999'
+nice: invalid pid 'abc'
+nice: invalid priority '-1'
+usage: nice pid [priority]
+CASE nice query set invalid-input exit-status PASS
+METRIC case=equal id=0 pid=48 priority=10 start_ticks=0 finish_ticks=1 work=12000000
+METRIC case=equal id=1 pid=49 priority=10 start_ticks=1 finish_ticks=1 work=12000000
+METRIC case=equal id=2 pid=50 priority=10 start_ticks=1 finish_ticks=1 work=12000000
+prioritytest: FAIL qemu-system-riscv64: terminating on signal 15 from pid 2818 (python3)

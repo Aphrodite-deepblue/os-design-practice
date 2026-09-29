@@ -1,0 +1,17 @@
+
+xv6 kernel is booting
+
+init: starting sh
+$ prioritytest bench
+METRIC case=equal id=0 pid=4 priority=10 start_ticks=0 finish_ticks=14 work=120000000
+METRIC case=equal id=1 pid=5 priority=10 start_ticks=1 finish_ticks=13 work=120000000
+METRIC case=equal id=2 pid=6 priority=10 start_ticks=2 finish_ticks=14 work=120000000
+CASE equal workers=3 PASS
+METRIC case=mixed id=0 pid=7 priority=3 start_ticks=0 finish_ticks=4 work=120000000
+METRIC case=mixed id=1 pid=8 priority=10 start_ticks=4 finish_ticks=8 work=120000000
+METRIC case=mixed id=2 pid=9 priority=20 start_ticks=8 finish_ticks=12 work=120000000
+CASE mixed workers=3 PASS
+prioritytest: PASS
+$ echo TASK5_POST_EXIT_OK
+TASK5_POST_EXIT_OK
+qemu-system-riscv64: terminating on signal 15 from pid 5003 (python3)
